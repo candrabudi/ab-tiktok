@@ -17,10 +17,10 @@ class TikTokController extends Controller
     // func pencarian tiktok
     public function search(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(3000);
 
         $startTime = microtime(true);
-        $maxExecutionTime = 5 * 60;
+        $maxExecutionTime = 50 * 60;
 
         $keywords = $request->input('keywords', 'hallo');
         $count = 0;
@@ -56,40 +56,73 @@ class TikTokController extends Controller
                 foreach ($result['data']['videos'] as $video) {
                     $uniqueId = $video['author']['id'];
 
-                    $checkTiktokResult = TiktokResult::where('unique_id', $uniqueId)
+                    $checkTiktokResult = TiktokAccount::where('tiktok_account_id', $video['author']['id'])
                         ->select('id')
                         ->first();
 
                     if (!$checkTiktokResult) {
-                        $tiktokResult = new TiktokResult();
-                        $tiktokResult->tiktok_search_id = $tiktokSearch->id;
-                        $tiktokResult->tiktok_id = $video['video_id'];
-                        $tiktokResult->nickname = $video['author']['nickname'];
-                        $tiktokResult->verified = 0;
-                        $tiktokResult->following = 0;
-                        $tiktokResult->followers = 0;
-                        $tiktokResult->likes = $video['digg_count'];
-                        $tiktokResult->total_video = 0;
-                        $tiktokResult->unique_id = $uniqueId;
-                        $tiktokResult->signature = $video['title'];
-                        $tiktokResult->avatar_thumb = $video['author']['avatar'];
-                        $tiktokResult->avatar_medium = $video['author']['avatar'];
-                        $tiktokResult->avatar_large = $video['author']['avatar'];
-                        $tiktokResult->is_scrapper = 1;
-                        $tiktokResult->save();
-                        
                         $tiktokAccount = new TiktokAccount();
                         $tiktokAccount->tiktok_search_id = $tiktokSearch->id;
                         $tiktokAccount->tiktok_account_id = $video['author']['id'];
                         $tiktokAccount->nickname = $video['author']['nickname'];
                         $tiktokAccount->verified = 0;
-                        $tiktokAccount->following = 0;
-                        $tiktokAccount->followers = 0;
-                        $tiktokAccount->likes = 0;
-                        $tiktokAccount->total_video = 0;
                         $tiktokAccount->unique_id = $uniqueId;
                         $tiktokAccount->avatar = $video['author']['avatar'];
+                        
+
+                        $responseAccount = Http::withHeaders([
+                            'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
+                            'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+                        ])->get('https://tiktok-download-video1.p.rapidapi.com/userInfo', [
+                            'user_id' => $video['author']['id'],
+                        ]);
+                
+                        $resultAccount= $responseAccount->json();
+                        if ($resultAccount['code'] == 0) {
+                            $data = $resultAccount['data'];
+                            $tiktokAccount->followers = $data['stats']['followerCount'];
+                            $tiktokAccount->following = $data['stats']['followingCount'];
+                            $tiktokAccount->likes = $data['stats']['heart'];
+                            $tiktokAccount->likes = $data['stats']['heart'];
+                            $tiktokAccount->total_video = $data['stats']['videoCount'];
+                        }
                         $tiktokAccount->save();
+
+                        $responseVideos = Http::withHeaders([
+                            'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
+                            'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+                        ])->get('https://tiktok-download-video1.p.rapidapi.com/userPublishVideo', [
+                            'user_id' => $video['author']['id'],
+                            'count' => 30, 
+                            'cursor' => 0,
+                        ]);
+                
+                        $resultVideos = $responseVideos->json();
+                        if ($resultVideos['code'] == 0) {
+                            $accVideos = $resultVideos['data']['videos'];
+            
+                            foreach($accVideos as $accVideo) {
+                                TiktokAccountVideo::create([
+                                    'tiktok_account_id' => $video['author']['id'],
+                                    'aweme_id' => $accVideo['aweme_id'],
+                                    'video_id' => $accVideo['video_id'],
+                                    'region' => $accVideo['region'],
+                                    'title' => $accVideo['title'],
+                                    'cover' => $accVideo['cover'],
+                                    'duration' => $accVideo['duration'],
+                                    'play' => $accVideo['play'],
+                                    'play_count' => $accVideo['play_count'],
+                                    'digg_count' => $accVideo['digg_count'],
+                                    'comment_count' => $accVideo['comment_count'],
+                                    'share_count' => $accVideo['share_count'],
+                                    'download_count' => $accVideo['download_count'],
+                                    'collect_count' => $accVideo['collect_count'],
+                                    'create_time' => $accVideo['create_time'],
+                                    'is_top' => $accVideo['is_top']
+                                ]);
+                            }
+                        }
+
                         $count++;
                     }
                 }

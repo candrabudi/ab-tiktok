@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TiktokAccount;
+use App\Models\TiktokAccountVideo;
+use App\Models\TiktokResult;
+use App\Models\TiktokSearch;
 use Illuminate\Http\Request;
+use Http;
 
 class HomeController extends Controller
 {
@@ -23,6 +28,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $totalAccount = TiktokAccount::count();
+        $totalSearch = TiktokSearch::count();
+        $totalResult = TiktokResult::count();
+        $totalVideo = TiktokAccountVideo::count();
+        return view('home', compact('totalAccount', 'totalSearch', 'totalResult', 'totalVideo'));
     }
+
 }

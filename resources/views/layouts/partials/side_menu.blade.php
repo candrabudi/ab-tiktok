@@ -12,12 +12,12 @@
         </li>
         
         <li>
-            <a href="/scrap-username" class="side-menu">
+            <a href="/data-search" class="side-menu">
                 <div class="side-menu__icon">
                     <i data-tw-merge="" data-lucide="file" class="stroke-1.5 w-5 h-5"></i>
                 </div>
                 <div class="side-menu__title">
-                    Scrap Username
+                    Hasil Pencarian
                 </div>
             </a>
         </li>

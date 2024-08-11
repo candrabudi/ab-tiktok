@@ -252,7 +252,7 @@
                 <!-- BEGIN: Login Info -->
                 <div class="hidden min-h-screen flex-col xl:flex">
                     <a class="-intro-x flex items-center pt-5" href="#">
-                        <img class="w-6" src="{{ asset('dist/images/logo.svg') }}"
+                        <img class="w-6" src="{{ asset('https://cdn-icons-png.flaticon.com/512/3437/3437352.png') }}"
                             alt="Midone - Tailwind Admin Dashboard Template">
                         <span class="ml-3 text-lg text-white"> GASSTOK </span>
                     </a>

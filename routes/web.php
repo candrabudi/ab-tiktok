@@ -14,10 +14,14 @@ use App\Http\Controllers\TikTokController;
 */
 
 Route::get('/tiktok/search', [TikTokController::class, 'search'])->name('tiktok.search');
-Route::get('/scrap-username', [TikTokController::class, 'scrapTikTokUsername'])->name('tiktok.scrap.username');
-Route::get('/load/scrap-username', [TikTokController::class, 'loadScrapTikTokUsername'])->name('tiktok.load.scrap.username');
-Route::get('/update/scrap-username', [TikTokController::class, 'updateScrapTikTokUsername'])->name('tiktok.update.scrap.username');
-Route::get('/tiktok/detail/{id}', [TikTokController::class, 'detail'])->name('tiktok.detail');
+Route::get('/data-search', [TikTokController::class, 'searchResult'])->name('tiktok.scrap.username');
+Route::get('/load/scrap-username', [TikTokController::class, 'loadSearchResult'])->name('tiktok.load.scrap.username');
+Route::get('/data-search/detail/{a}', [TikTokController::class, 'detailSearchResults'])->name('tiktok.search.detail');
+Route::get('/load/data-search/detail/{a}', [TikTokController::class, 'loadDetailSearchResults'])->name('titkok.load.results');
+Route::get('/data-search/profile/{a}', [TikTokController::class, 'dataSearchProfile'])->name('titkok.data.search.profile');
+Route::get('/export-data/{a}', [TikTokController::class, 'exportTikTokAccounts'])->name('tiktok.account.export');
+Route::get('/data-search/profile/videos/{a}', [TikTokController::class, 'scrapVideoTiktokAccount'])->name('tiktok.account.videos');
+Route::get('/load/data-search/profile/videos/{a}', [TikTokController::class, 'loadTiktokAccountVideo'])->name('tiktok.load.account.videos');
 
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

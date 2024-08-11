@@ -2,19 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TiktokAccount;
+use App\Models\TiktokAccountVideo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\TiktokSearch;
 use App\Models\TiktokResult;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class TikTokController extends Controller
 {
+
+    // func pencarian tiktok
     public function search(Request $request)
     {
+        set_time_limit(300);
+
+        $startTime = microtime(true);
+        $maxExecutionTime = 5 * 60;
+
         $keywords = $request->input('keywords', 'hallo');
         $count = 0;
         $cursor = 0;
-        $uniqueIds = [];
+        $videos = [];
 
         $tiktokSearch = new TiktokSearch();
         $tiktokSearch->keyword = $keywords;
@@ -23,55 +34,69 @@ class TikTokController extends Controller
         $tiktokSearch->fresh();
 
         while ($count < 200) {
+            $currentTime = microtime(true);
+            if (($currentTime - $startTime) >= $maxExecutionTime) {
+                break;
+            }
+
             $response = Http::withHeaders([
-                'x-rapidapi-host' => 'tiktok-api23.p.rapidapi.com',
-                'x-rapidapi-key' => 'b2d0328c9emsh70fb505520fda60p1fa0cfjsn15e4724016f0'
-            ])->get('https://tiktok-api23.p.rapidapi.com/api/search/video', [
-                'keyword' => $keywords,
+                'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
+                'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+            ])->get('https://tiktok-download-video1.p.rapidapi.com/feedSearch', [
+                'keywords' => $keywords,
+                'count' => 30,
                 'cursor' => $cursor,
-                'search_id' => ""
+                'region' => 'ID',
+                'publish_time' => 0,
+                'sort_type' => 0
             ]);
 
-            $videos = $response->json();
+            $result = $response->json();
+            if ($result['code'] == 0 && isset($result['data']['videos'])) {
+                foreach ($result['data']['videos'] as $video) {
+                    $uniqueId = $video['author']['id'];
 
-            if ($videos['status_code'] == 0 && isset($videos['item_list'])) {
-                foreach ($videos['item_list'] as $video) {
-                    $uniqueId = $video['author']['uniqueId'];
-                    
-                    // Check if the uniqueId is already processed
-                    if (!in_array($uniqueId, $uniqueIds)) {
-                        $checkTiktokResult = TiktokResult::where('unique_id', $uniqueId)
-                            ->select('id')
-                            ->first();
+                    $checkTiktokResult = TiktokResult::where('unique_id', $uniqueId)
+                        ->select('id')
+                        ->first();
 
-                        if (!$checkTiktokResult) {
-                            $tiktokResult = new TiktokResult();
-                            $tiktokResult->tiktok_search_id = $tiktokSearch->id;
-                            $tiktokResult->tiktok_id = $video['author']['id'];
-                            $tiktokResult->nickname = $video['author']['nickname'];
-                            $tiktokResult->verified = $video['author']['verified'];
-                            $tiktokResult->following = $video['authorStats']['followingCount'];
-                            $tiktokResult->followers = $video['authorStats']['followerCount'];
-                            $tiktokResult->likes = $video['authorStats']['heartCount'];
-                            $tiktokResult->total_video = $video['authorStats']['videoCount'];
-                            $tiktokResult->unique_id = $uniqueId;
-                            $tiktokResult->signature = $video['author']['signature'];
-                            $tiktokResult->avatar_thumb = $video['author']['avatarThumb'];
-                            $tiktokResult->avatar_medium = $video['author']['avatarMedium'];
-                            $tiktokResult->avatar_large = $video['author']['avatarLarger'];
-                            $tiktokResult->is_scrapper = 1;
-                            $tiktokResult->save();
-
-                            // Add uniqueId to the array to avoid duplicates
-                            $uniqueIds[] = $uniqueId;
-                            $count++;
-                        }
+                    if (!$checkTiktokResult) {
+                        $tiktokResult = new TiktokResult();
+                        $tiktokResult->tiktok_search_id = $tiktokSearch->id;
+                        $tiktokResult->tiktok_id = $video['video_id'];
+                        $tiktokResult->nickname = $video['author']['nickname'];
+                        $tiktokResult->verified = 0;
+                        $tiktokResult->following = 0;
+                        $tiktokResult->followers = 0;
+                        $tiktokResult->likes = $video['digg_count'];
+                        $tiktokResult->total_video = 0;
+                        $tiktokResult->unique_id = $uniqueId;
+                        $tiktokResult->signature = $video['title'];
+                        $tiktokResult->avatar_thumb = $video['author']['avatar'];
+                        $tiktokResult->avatar_medium = $video['author']['avatar'];
+                        $tiktokResult->avatar_large = $video['author']['avatar'];
+                        $tiktokResult->is_scrapper = 1;
+                        $tiktokResult->save();
+                        
+                        $tiktokAccount = new TiktokAccount();
+                        $tiktokAccount->tiktok_search_id = $tiktokSearch->id;
+                        $tiktokAccount->tiktok_account_id = $video['author']['id'];
+                        $tiktokAccount->nickname = $video['author']['nickname'];
+                        $tiktokAccount->verified = 0;
+                        $tiktokAccount->following = 0;
+                        $tiktokAccount->followers = 0;
+                        $tiktokAccount->likes = 0;
+                        $tiktokAccount->total_video = 0;
+                        $tiktokAccount->unique_id = $uniqueId;
+                        $tiktokAccount->avatar = $video['author']['avatar'];
+                        $tiktokAccount->save();
+                        $count++;
                     }
                 }
 
-                $cursor = $response->json()['cursor'];
+                $cursor = $result['data']['cursor'];
 
-                if (count($videos['item_list']) === 0) {
+                if (!$result['data']['hasMore']) {
                     break;
                 }
             } else {
@@ -79,75 +104,226 @@ class TikTokController extends Controller
             }
         }
 
-        $dataTiktokResults = TiktokResult::where('tiktok_search_id', $tiktokSearch->id)
-            ->get();
-
-        return response()->json($dataTiktokResults);
+        return response()->json([
+            "code" => 0,
+            "msg" => "success",
+            "processed_time" => round((microtime(true) - $startTime), 4),
+            "total_data" => $cursor,
+        ]);
     }
 
+    // end func pencarian tiktok
 
-    public function scrapTikTokUsername(Request $request)
+
+    // list hasil pencarian tiktok
+    public function searchResult(Request $request)
     {
-        $results = TiktokResult::paginate(10);
+        $results = TiktokSearch::paginate(10);
 
         if ($request->ajax()) {
             return view('tiktok_results', compact('results'))->render();
         }
 
-        // return $results;
-        return view('tiktok_username', compact('results'));
+        return view('tiktok_keyword', compact('results'));
     }
 
-    public function loadScrapTikTokUsername(Request $request)
+    public function loadSearchResult(Request $request)
     {
         $page = $request->input('page', 1);
         $perPage = $request->input('perPage', 10);
-        $products = TiktokResult::paginate($perPage, ['*'], 'page', $page);
+        $products = TiktokSearch::paginate($perPage, ['*'], 'page', $page);
 
         return response()->json($products);
     }
-   
-    public function updateScrapTikTokUsername(Request $request)
+
+    // end list hasil pencarian tiktok
+
+    // data profile akun tiktok
+    public function dataSearchProfile(Request $request, $a)
     {
-        ini_set('max_execution_time', 30000);
-        $dataUpdates = TiktokResult::where('is_scrapper', 0)
-            ->get();
+        $tiktokResult = TiktokAccount::where('unique_id', $a)
+            ->first();
 
-        foreach($dataUpdates as $update) {
+        if(!$tiktokResult) {
+            return redirect()->route('home');
+        }
+
+        $response = Http::withHeaders([
+            'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
+            'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+        ])->get('https://tiktok-download-video1.p.rapidapi.com/userInfo', [
+            'user_id' => $tiktokResult->tiktok_account_id,
+        ]);
+
+        $result = $response->json();
+        if ($result['code'] == 0 && $tiktokResult->followers == 0) {
+            $data = $result['data'];
+
+            $tiktokResult->followers = $data['stats']['followerCount'];
+            $tiktokResult->following = $data['stats']['followingCount'];
+            $tiktokResult->likes = $data['stats']['heart'];
+            $tiktokResult->likes = $data['stats']['heart'];
+            $tiktokResult->total_video = $data['stats']['videoCount'];
+            $tiktokResult->save();
+        }
+
+        $titkokAccountVideo = TiktokAccountVideo::where('tiktok_account_id', $a)
+            ->count();
+
+        $results = TiktokAccountVideo::where('tiktok_account_id', $a)
+            ->paginate(10);
+
+        if ($request->ajax()) {
+            return view('tiktok_results', compact('results'))->render();
+        }
+
+        return view('tiktok_account', compact('tiktokResult', 'a'));
+    }
+
+    public function loadTiktokAccountVideo(Request $request, $a)
+    {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('perPage', 10);
+        $products = TiktokAccountVideo::where('tiktok_account_id', $a)
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($products);
+    }
+
+    // end data profile akun tiktok
+
+    // scrap video berdasarkan akun tiktok
+
+    public function scrapVideoTiktokAccount($a) 
+    {
+        $accountTikTok = TiktokAccount::where('tiktok_account_id', $a)
+            ->first();
+        
+        if(!$accountTikTok) {
+            return redirect()->route('home');
+        }
+        $titkokAccountVideo = TiktokAccountVideo::where('tiktok_account_id', $a)
+            ->count();
+
+        if($titkokAccountVideo == 0) {
             $response = Http::withHeaders([
-                'x-rapidapi-host' => 'tiktok-scraper7.p.rapidapi.com',
+                'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
                 'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
-            ])->get('https://tiktok-scraper7.p.rapidapi.com/user/info', [
-                'user_id' => $update->tiktok_id,
+            ])->get('https://tiktok-download-video1.p.rapidapi.com/userPublishVideo', [
+                'user_id' => $accountTikTok->tiktok_account_id,
+                'count' => 30, 
+                'cursor' => 0,
             ]);
+    
+            $result = $response->json();
+            if ($result['code'] == 0) {
+                $videos = $result['data']['videos'];
 
-            $data = $response->json();
-            if (isset($data['data'])) {
-                $userData = $data['data']['user'] ?? [];
-                $statsData = $data['data']['stats'] ?? [];
-
-                $update->avatar_thumb = $userData['avatarThumb'] ?? null;
-                $update->avatar_medium = $userData['avatarMedium'] ?? null;
-                $update->avatar_large = $userData['avatarLarger'] ?? null;
-                $update->signature = $userData['signature'] ?? null;
-                $update->verified = !empty($userData['verified']) ? 1 : 0;
-                $update->followers = $statsData['followerCount'] ?? 0;
-                $update->following = $statsData['followingCount'] ?? 0;
-                $update->likes = $statsData['heartCount'] ?? 0;
-                $update->total_video = $statsData['videoCount'] ?? 0;
-                $update->is_scrapper = 1;
-                $update->save();
-            } else {
-                continue;
+                foreach($videos as $video) {
+                    TiktokAccountVideo::create([
+                        'tiktok_account_id' => $a,
+                        'aweme_id' => $video['aweme_id'],
+                        'video_id' => $video['video_id'],
+                        'region' => $video['region'],
+                        'title' => $video['title'],
+                        'cover' => $video['cover'],
+                        'duration' => $video['duration'],
+                        'play' => $video['play'],
+                        'play_count' => $video['play_count'],
+                        'digg_count' => $video['digg_count'],
+                        'comment_count' => $video['comment_count'],
+                        'share_count' => $video['share_count'],
+                        'download_count' => $video['download_count'],
+                        'collect_count' => $video['collect_count'],
+                        'create_time' => $video['create_time'],
+                        'is_top' => $video['is_top']
+                    ]);
+                }
             }
         }
+
+        return redirect()->back();
+        
     }
 
-    public function detail($id)
+    // end scrap video berdasarkan akun tiktok
+
+
+    // detail list akun hasil scrap tiktok
+    public function detailSearchResults(Request $request, $a)
     {
-        $tiktokResult = TiktokResult::where('id', $id)
-            ->first();
-        return view('tiktok_detail', compact('tiktokResult'));
+        $results = TiktokAccount::with('videos')
+            ->where('tiktok_search_id', $a)
+            ->where('nickname', 'LIKE', '%'. $request->search.'%')
+            ->paginate(10);
+    
+        // Add the average play count to each account
+        $results->getCollection()->transform(function ($account) {
+            $account->top12_play_count_average = $account->getTop12PlayCountAverageAttribute();
+            return $account;
+        });
+        if ($request->ajax()) {
+            return view('tiktok_results', compact('results', 'a'))->render();
+        }
+    
+        return view('tiktok_detail', compact('results', 'a'));
+    }
+    
+
+    public function loadDetailSearchResults(Request $request, $a)
+    {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('perPage', 10);
+
+        $results = TiktokAccount::with('videos')
+            ->where('tiktok_search_id', $a)
+            ->where('nickname', 'LIKE', '%'. $request->search.'%')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        // Add the average play count to each account
+        $results->getCollection()->transform(function ($account) {
+            $account->top12_play_count_average = $account->getTop12PlayCountAverageAttribute();
+            return $account;
+        });
+
+        return response()->json($results);
     }
 
+    // end detail list akun hasil scrap tiktok
+
+    
+
+   // export list akun tiktok berdasarkan pencarian
+    public function exportTikTokAccounts($a)
+    {
+        $tiktokAccounts = TiktokAccount::where('tiktok_search_id', $a)->get();
+        $output = '';
+
+        // Header CSV
+        $output .= "Nickname,Unique ID,Followers,Likes,Total Video\n";
+
+        foreach ($tiktokAccounts as $account) {
+            $nickname = str_pad($this->escapeForCsv($account->nickname), 30); // Panjang 30
+            $uniqueId = str_pad($this->escapeForCsv('https://tiktok.com/@' . $account->unique_id), 50); // Panjang 50
+            $followers = str_pad($this->escapeForCsv($account->followers), 20); // Panjang 20
+            $likes = str_pad($this->escapeForCsv($account->likes), 15); // Panjang 15
+            $totalVideo = str_pad($this->escapeForCsv($account->total_video), 10); // Panjang 10
+
+            $output .= $nickname . ',' . $uniqueId . ',' . $followers . ',' . $likes . ',' . $totalVideo . "\n";
+        }
+
+        header('Content-Type: application/csv');
+        header('Content-Disposition: attachment;filename="tiktok_accounts.csv"');
+        header('Cache-Control: max-age=0');
+
+        echo $output;
+        exit;
+    }
+
+    private function escapeForCsv($value)
+    {
+        $escapedValue = str_replace('"', '""', $value);
+        return '"' . $escapedValue . '"';
+    }
+    // end export list akun tiktok berdasarkan pencarian
 }

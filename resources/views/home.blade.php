@@ -14,8 +14,8 @@
                             <i data-tw-merge="" data-lucide="credit-card"
                                 class="stroke-1.5 h-[28px] w-[28px] text-pending"></i>
                         </div>
-                        <div class="mt-6 text-3xl font-medium leading-8">4.710</div>
-                        <div class="mt-1 text-base text-slate-500">Total User</div>
+                        <div class="mt-6 text-3xl font-medium leading-8">{{ $totalAccount }}</div>
+                        <div class="mt-1 text-base text-slate-500">Total Akun TikTok</div>
                     </div>
                 </div>
             </div>
@@ -27,8 +27,8 @@
                             <i data-tw-merge="" data-lucide="credit-card"
                                 class="stroke-1.5 h-[28px] w-[28px] text-pending"></i>
                         </div>
-                        <div class="mt-6 text-3xl font-medium leading-8">3.721</div>
-                        <div class="mt-1 text-base text-slate-500">Total Search</div>
+                        <div class="mt-6 text-3xl font-medium leading-8">{{ $totalSearch }}</div>
+                        <div class="mt-1 text-base text-slate-500">Total Pencarian</div>
                     </div>
                 </div>
             </div>
@@ -40,9 +40,9 @@
                             <i data-tw-merge="" data-lucide="credit-card"
                                 class="stroke-1.5 h-[28px] w-[28px] text-pending"></i>
                         </div>
-                        <div class="mt-6 text-3xl font-medium leading-8">2.149</div>
+                        <div class="mt-6 text-3xl font-medium leading-8">{{ $totalResult }}</div>
                         <div class="mt-1 text-base text-slate-500">
-                            Total User Terpilih
+                            Total Scrap
                         </div>
                     </div>
                 </div>
@@ -55,9 +55,9 @@
                             <i data-tw-merge="" data-lucide="credit-card"
                                 class="stroke-1.5 h-[28px] w-[28px] text-pending"></i>
                         </div>
-                        <div class="mt-6 text-3xl font-medium leading-8">152.040</div>
+                        <div class="mt-6 text-3xl font-medium leading-8">{{ $totalVideo }}</div>
                         <div class="mt-1 text-base text-slate-500">
-                            Total View Tiktok
+                            Total Video Tiktok
                         </div>
                     </div>
                 </div>
@@ -115,51 +115,7 @@
                     success: function(data) {
                         var resultsHtml = '<table class="w-full text-left -mt-2 border-separate border-spacing-y-[10px]">';
                         resultsHtml += '<thead><tr>';
-                        resultsHtml += '<th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">AVATAR</th>';
-                        resultsHtml += '<th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">NAMA AKUN</th>';
-                        resultsHtml += '<th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">FOLLOWER</th>';
-                        resultsHtml += '<th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">LIKE</th>';
-                        resultsHtml += '<th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">STATUS VERIFIED</th>';
-                        resultsHtml += '<th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">AKSI</th>';
-                        resultsHtml += '</tr></thead><tbody>';
-    
-                        if (data.length === 0) {
-                            resultsHtml += '<tr><td colspan="6" class="text-center py-5">Data Belum Di Ambil</td></tr>';
-                        } else {
-                            data.forEach(function(user) {
-                                resultsHtml += '<tr class="intro-x">';
-                                resultsHtml += '<td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">';
-                                resultsHtml += '<div class="flex">';
-                                resultsHtml += '<div class="image-fit zoom-in h-10 w-10">';
-                                resultsHtml += '<img src="' + user.avatar_thumb + '" alt="avatar" class="tooltip cursor-pointer rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]">';
-                                resultsHtml += '</div>';
-                                resultsHtml += '</div>';
-                                resultsHtml += '</td>';
-    
-                                resultsHtml += '<td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">';
-                                resultsHtml += '<a class="whitespace-nowrap font-medium" href="#">' + user.nickname + '</a>';
-                                resultsHtml += '<div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">' + user.unique_id + '</div>';
-                                resultsHtml += '</td>';
-    
-                                resultsHtml += '<td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">';
-                                resultsHtml += '<div class="whitespace-nowrap font-medium">' + user.followers + '</div>';
-                                resultsHtml += '</td>';
-    
-                                resultsHtml += '<td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">';
-                                resultsHtml += '<div class="whitespace-nowrap font-medium">' + user.likes + '</div>';
-                                resultsHtml += '</td>';
-    
-                                resultsHtml += '<td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">';
-                                resultsHtml += '<div class="whitespace-nowrap font-medium">' + (user.verified ? 'Verified' : 'Not Verified') + '</div>';
-                                resultsHtml += '</td>';
-    
-                                resultsHtml += '<td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">';
-                                resultsHtml += '<button class="btn btn-primary ml-2">Detail</button>';
-                                resultsHtml += '</td>';
-    
-                                resultsHtml += '</tr>';
-                            });
-                        }
+                        resultsHtml += '<tr><td colspan="6" class="text-center py-5">Berhasil mengambil data '+ keywords +' dengan total data ' + data.cursor +'</td></tr>';
     
                         resultsHtml += '</tbody></table>';
                         $('#videos-container').html(resultsHtml);

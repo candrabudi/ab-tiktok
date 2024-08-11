@@ -1,14 +1,51 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="intro-y box mt-5 px-5 pt-5">
+        <div class="-mx-5 flex flex-col border-b border-slate-200/60 pb-5 dark:border-darkmode-400 lg:flex-row">
+            <div class="flex flex-1 items-center justify-center px-5 lg:justify-start">
+                <div class="image-fit relative h-20 w-20 flex-none sm:h-24 sm:w-24 lg:h-32 lg:w-32">
+                    <img class="rounded-full" src="{{ $tiktokResult->avatar }}"
+                        alt="{{ $tiktokResult->nickname }}">
+                </div>
+                <div class="ml-5">
+                    <div class="w-24 truncate text-lg font-medium sm:w-40 sm:whitespace-normal">
+                        {{ $tiktokResult->nickname }}
+                    </div>
+                    <div class="text-slate-500">{{ $tiktokResult->unique_id }}</div>
+                </div>
+            </div>
+            <div
+                class="mt-6 flex-1 border-l border-r border-t border-slate-200/60 px-5 pt-5 dark:border-darkmode-400 lg:mt-0 lg:border-t-0 lg:pt-0">
+                <div class="text-center font-medium lg:mt-3 lg:text-left">
+                    Detail Akun
+                </div>
+                <div class="mt-4 flex flex-col items-center justify-center lg:items-start">
+                    <div class="flex items-center truncate sm:whitespace-normal">
+                        <i data-tw-merge="" data-lucide="user-check" class="stroke-1.5 mr-2 h-4 w-4"></i>
+                        {{ $tiktokResult->followers }}
+                    </div>
+                    <div class="mt-3 flex items-center truncate sm:whitespace-normal">
+                        <i data-tw-merge="" data-lucide="heart" class="stroke-1.5 mr-2 h-4 w-4"></i>
+                        {{ $tiktokResult->likes }} 
+                    </div>
+                    <div class="mt-3 flex items-center truncate sm:whitespace-normal">
+                        <i data-tw-merge="" data-lucide="video" class="stroke-1.5 mr-2 h-4 w-4"></i>
+                        {{ $tiktokResult->total_video }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-span-12 mt-6 xl:col-span-12">
         <div class="intro-y box mt-12 p-5 sm:mt-5" id="search-results">
             <div class="mt-5 grid grid-cols-12 gap-6">
                 <div id="videos-container" class="intro-y col-span-12 overflow-auto lg:overflow-visible">
                     <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-                        <a href="{{ route('tiktok.account.export', $a) }}" id="update-data-button" class="mb-3 transition duration-200 border inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus-visible:outline-none dark:focus:ring-slate-700 dark:focus:ring-opacity-50 [&:hover:not(:disabled)]:bg-opacity-90 [&:hover:not(:disabled)]:border-opacity-90 [&:not(button)]:text-center disabled:opacity-70 disabled:cursor-not-allowed bg-primary border-primary text-white dark:border-primary mr-2 shadow-md" style="margin-right: 10px; ">Export Data</a>
-                        <button id="export-to-excel" class="btn btn-primary">Export to Excel</button>
-
+                        <div class="mb-5">
+                            <a href="{{ route('tiktok.account.videos', $a) }}" id="update-data-button" class="transition duration-200 border inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus-visible:outline-none dark:focus:ring-slate-700 dark:focus:ring-opacity-50 [&:hover:not(:disabled)]:bg-opacity-90 [&:hover:not(:disabled)]:border-opacity-90 [&:not(button)]:text-center disabled:opacity-70 disabled:cursor-not-allowed bg-primary border-primary text-white dark:border-primary mr-2 shadow-md">Ambil Data Video</a>
+                        </div>
                         <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
                             <!-- Left-aligned select element -->
                             <select id="per-page"
@@ -35,32 +72,28 @@
                         </div>
                         
                         <table id="products-table" data-tw-merge=""
-                            class="w-full text-left -mt-2 border-separate border-spacing-y-[10px]">
+                            class="w-full text-left -mt-5 border-separate border-spacing-y-[10px]">
                             <thead data-tw-merge="" class="">
                                 <tr data-tw-merge="" class="">
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
-                                        Avatar
-                                    </th>
-                                    <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
-                                        NickName
+                                        Video ID
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Pengikut
+                                        Total Comment
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Disukai
+                                        Total Penonton
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Average Views
+                                        Total Disukai
                                     </th>
                                     <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">
-                                        Aksi
+                                        class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
+                                        Total Share
                                     </th>
                                 </tr>
                             </thead>
@@ -94,59 +127,6 @@
     </div>
 @endsection
 @section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const exportButton = document.getElementById('export-to-excel');
-
-    const fetchAllData = async () => {
-        let allData = [];
-        let currentPage = 1;
-        let totalPages = 0;
-
-        const loadPageData = async (page) => {
-            try {
-                const response = await fetch(`/load/data-search/detail/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`);
-                const data = await response.json();
-                allData = allData.concat(data.data);
-                totalPages = Math.ceil(data.total / data.per_page);
-
-                if (page < totalPages) {
-                    currentPage++;
-                    await loadPageData(currentPage);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
-
-        await loadPageData(currentPage);
-        return allData;
-    };
-
-    const exportToExcel = async () => {
-        const allData = await fetchAllData();
-
-        // Load the xlsx library
-        const XLSX = window.XLSX;
-
-        // Create a new workbook and add a worksheet
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(allData, {
-            header: ["avatar", "nickname", "followers", "likes", "top12_play_count_average"], // Adjust headers according to your data
-        });
-
-        XLSX.utils.book_append_sheet(wb, ws, "Products");
-
-        // Generate Excel file and trigger download
-        XLSX.writeFile(wb, "products.xlsx");
-    };
-
-    exportButton.addEventListener('click', exportToExcel);
-});
-
-</script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('#products-table tbody');
@@ -170,49 +150,31 @@
                 };
             };
 
-            const loadData = async (url = `/load/data-search/detail/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`) => {
+            const loadData = async (url = `/load/data-search/profile/videos/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`) => {
                 loadingSpinner.classList.remove('hidden');
                 try {
                     const response = await fetch(url);
                     const data = await response.json();
 
                     tableBody.innerHTML = '';
-                    data.data.forEach(result => {
+                    data.data.forEach(video => {
                         const row = document.createElement('tr');
                         row.classList.add('intro-x');
                         row.innerHTML = `
-                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                <div class="flex">
-                                    <div class="image-fit zoom-in h-10 w-10">
-                                        <img data-placement="top" title="Uploaded at24 March 2021" src="${result.avatar}" alt="Product Image" class="tooltip cursor-pointer rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]">
-                                    </div>
-                                </div>
-                            </td>
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                ${result.nickname}
+                                <a href="https://www.tiktok.com/@${video.tiktok_account_id}/video/${video.video_id}" class="text-primary" target="_blank">${video.video_id}</a>
                             </td>
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                ${result.followers ? result.followers : 'N/A'}
+                                ${video.comment_count}
                             </td>
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                ${result.likes ? result.likes : 'N/A'}
+                                ${video.play_count}
                             </td>
-                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                <div class="flex items-center justify-center text-${result.verified ? 'success' : 'danger'}">
-                                    ${result.top12_play_count_average}
-                                </div>
+                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
+                                Belum Crawling
                             </td>
-                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-56 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
-                                <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="/data-search/profile/${result.unique_id}">
-                                        <i class="stroke-1.5 mr-1 h-4 w-4"></i>
-                                        Detail
-                                    </a>
-                                    <a class="flex items-center text-danger" href="/product/delete/${result.id}" data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
-                                        <i class="stroke-1.5 mr-1 h-4 w-4"></i>
-                                        Delete
-                                    </a>
-                                </div>
+                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
+                                ${video.share_count}
                             </td>
                         `;
                         tableBody.appendChild(row);

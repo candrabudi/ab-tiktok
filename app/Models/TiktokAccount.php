@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TiktokResult extends Model
+class TiktokAccount extends Model
 {
     use HasFactory;
 
     public function videos()
     {
-        return $this->hasMany(TiktokAccountVideo::class, 'tiktok_account_id', 'unique_id');
+        return $this->hasMany(TiktokAccountVideo::class, 'tiktok_account_id', 'tiktok_account_id');
     }
 
     public function getTop12PlayCountAverageAttribute()

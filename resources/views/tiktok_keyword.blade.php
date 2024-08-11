@@ -40,23 +40,11 @@
                                 <tr data-tw-merge="" class="">
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
-                                        Avatar
+                                        Keyword
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
-                                        NickName
-                                    </th>
-                                    <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Pengikut
-                                    </th>
-                                    <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Disukai
-                                    </th>
-                                    <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Verified
+                                        Tanggal Pencarian
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">
@@ -218,36 +206,17 @@
                     const row = document.createElement('tr');
                     row.classList.add('intro-x');
                     row.innerHTML = `
-                        <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            <div class="flex">
-                                <div class="image-fit zoom-in h-10 w-10">
-                                    <img data-placement="top" title="Uploaded at24 March 2021" src="${product.avatar_thumb}" alt="Midone - Tailwind Admin Dashboard Template" class="tooltip cursor-pointer rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]">
-                                </div>
-                            </div>
+                        <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
+                            ${product.keyword}
                         </td>
                         <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            ${product.nickname}
-                        </td>
-                        <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            ${product.followers ? product.followers : 'N/A'}
-                        </td>
-                        <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            ${product.likes ? product.likes : 'N/A'}
-                        </td>
-                        <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            <div class="flex items-center justify-center text-${product.verified ? 'success' : 'danger'}">
-                                ${product.verified ? 'Verifikasi' : 'Tidak Verifikasi'}
-                            </div>
+                            ${formatDate(product.created_at)}
                         </td>
                         <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box w-56 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
                             <div class="flex items-center justify-center">
-                                <a class="mr-3 flex items-center" href="/tiktok/detail/${product.id}">
+                                <a class="mr-3 flex items-center" href="/data-search/detail/${product.id}">
                                     <i data-tw-merge="" data-lucide="check-square" class="stroke-1.5 mr-1 h-4 w-4"></i>
                                     Detail
-                                </a>
-                                <a class="flex items-center text-danger" href="/product/delete/${product.id}" data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
-                                    <i data-tw-merge="" data-lucide="trash" class="stroke-1.5 mr-1 h-4 w-4"></i>
-                                    Delete
                                 </a>
                             </div>
                         </td>
@@ -270,6 +239,12 @@
             });
 
             loadData();
+
+            function formatDate(dateString) {
+                const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                const date = new Date(dateString);
+                return date.toLocaleString('en-GB', options);
+            }
         });
     </script>
 @endsection

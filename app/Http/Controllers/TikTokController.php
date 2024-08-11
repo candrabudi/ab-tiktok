@@ -10,6 +10,7 @@ use App\Models\TiktokSearch;
 use App\Models\TiktokResult;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\RapiApi;
 
 class TikTokController extends Controller
 {
@@ -17,6 +18,7 @@ class TikTokController extends Controller
     // func pencarian tiktok
     public function search(Request $request)
     {
+        $rapidAPI = RapiApi::first();
         set_time_limit(3000);
 
         $startTime = microtime(true);
@@ -41,7 +43,7 @@ class TikTokController extends Controller
 
             $response = Http::withHeaders([
                 'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
-                'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+                'x-rapidapi-key' => $rapidAPI->rapid_key
             ])->get('https://tiktok-download-video1.p.rapidapi.com/feedSearch', [
                 'keywords' => $keywords,
                 'count' => 30,
@@ -72,7 +74,7 @@ class TikTokController extends Controller
 
                         $responseAccount = Http::withHeaders([
                             'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
-                            'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+                            'x-rapidapi-key' => $rapidAPI->rapid_key
                         ])->get('https://tiktok-download-video1.p.rapidapi.com/userInfo', [
                             'user_id' => $video['author']['id'],
                         ]);
@@ -90,7 +92,7 @@ class TikTokController extends Controller
 
                         $responseVideos = Http::withHeaders([
                             'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
-                            'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+                            'x-rapidapi-key' => $rapidAPI->rapid_key
                         ])->get('https://tiktok-download-video1.p.rapidapi.com/userPublishVideo', [
                             'user_id' => $video['author']['id'],
                             'count' => 30, 
@@ -174,6 +176,7 @@ class TikTokController extends Controller
     // data profile akun tiktok
     public function dataSearchProfile(Request $request, $a)
     {
+        $rapidAPI = RapiApi::first();
         $tiktokResult = TiktokAccount::where('unique_id', $a)
             ->first();
 
@@ -183,7 +186,7 @@ class TikTokController extends Controller
 
         $response = Http::withHeaders([
             'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
-            'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+            'x-rapidapi-key' => $rapidAPI->rapid_key
         ])->get('https://tiktok-download-video1.p.rapidapi.com/userInfo', [
             'user_id' => $tiktokResult->tiktok_account_id,
         ]);
@@ -229,6 +232,7 @@ class TikTokController extends Controller
 
     public function scrapVideoTiktokAccount($a) 
     {
+        $rapidAPI = RapiApi::first();
         $accountTikTok = TiktokAccount::where('tiktok_account_id', $a)
             ->first();
         
@@ -241,7 +245,7 @@ class TikTokController extends Controller
         if($titkokAccountVideo == 0) {
             $response = Http::withHeaders([
                 'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
-                'x-rapidapi-key' => 'fd95897d1fmsh16cd082ff4db73ep145e8fjsn5adfe90752d1'
+                'x-rapidapi-key' => $rapidAPI->rapid_key
             ])->get('https://tiktok-download-video1.p.rapidapi.com/userPublishVideo', [
                 'user_id' => $accountTikTok->tiktok_account_id,
                 'count' => 30, 

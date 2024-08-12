@@ -40,7 +40,7 @@
                                 <tr data-tw-merge="" class="">
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
-                                        Avatar
+                                        User ID
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
@@ -52,15 +52,7 @@
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
-                                        Disukai
-                                    </th>
-                                    <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
                                         Average Views
-                                    </th>
-                                    <th data-tw-merge=""
-                                        class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">
-                                        Aksi
                                     </th>
                                 </tr>
                             </thead>

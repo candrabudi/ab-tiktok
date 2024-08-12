@@ -154,6 +154,14 @@ class TikTokController extends Controller
     public function searchResult(Request $request)
     {
         $results = TiktokSearch::paginate(10);
+        $results->getCollection()->transform(function ($account) {
+            $account->total_search = $account->getTiktokAccountCountAttribute();
+            return $account;
+        });
+
+        foreach ($results as $result) {
+            $result->account_count = $result->tiktokAccountCountAttribute;
+        }
 
         if ($request->ajax()) {
             return view('tiktok_results', compact('results'))->render();
@@ -162,13 +170,17 @@ class TikTokController extends Controller
         return view('tiktok_keyword', compact('results'));
     }
 
+
     public function loadSearchResult(Request $request)
     {
         $page = $request->input('page', 1);
         $perPage = $request->input('perPage', 10);
-        $products = TiktokSearch::paginate($perPage, ['*'], 'page', $page);
-
-        return response()->json($products);
+        $results = TiktokSearch::paginate($perPage, ['*'], 'page', $page);
+        $results->getCollection()->transform(function ($account) {
+            $account->total_search = $account->getTiktokAccountCountAttribute();
+            return $account;
+        });
+        return response()->json($results);
     }
 
     // end list hasil pencarian tiktok
@@ -229,7 +241,6 @@ class TikTokController extends Controller
     // end data profile akun tiktok
 
     // scrap video berdasarkan akun tiktok
-
     public function scrapVideoTiktokAccount($a) 
     {
         $rapidAPI = RapiApi::first();

@@ -5,7 +5,6 @@
         <div class="intro-y box mt-12 p-5 sm:mt-5" id="search-results">
             <div class="mt-5 grid grid-cols-12 gap-6">
                 <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-                    <button id="update-data-button" class="transition duration-200 border inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus-visible:outline-none dark:focus:ring-slate-700 dark:focus:ring-opacity-50 [&:hover:not(:disabled)]:bg-opacity-90 [&:hover:not(:disabled)]:border-opacity-90 [&:not(button)]:text-center disabled:opacity-70 disabled:cursor-not-allowed bg-primary border-primary text-white dark:border-primary mr-2 shadow-md">Update Data</button>
                     <div class="mt-3 w-full sm:ml-auto sm:mt-0 sm:w-auto md:ml-0">
                         <div class="relative w-56 text-slate-500">
                             <input id="search-keywords" type="text" placeholder="Search..."
@@ -45,6 +44,10 @@
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
                                         Tanggal Pencarian
+                                    </th>
+                                    <th data-tw-merge=""
+                                        class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
+                                        Jumlah Pencarian
                                     </th>
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0 text-center">
@@ -95,22 +98,6 @@
             let totalPages = 0;
             let nextPageUrl = null;
             let prevPageUrl = null;
-
-            updateDataButton.addEventListener('click', function() {
-                loadingSpinner.classList.remove('hidden');
-
-                fetch('/update/scrap-username')
-                    .then(response => response.json())
-                    .then(data => {
-                        loadingSpinner.classList.add('hidden');
-                        loadData();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        loadingSpinner.classList.add('hidden');
-                    });
-            });
-
 
             const updatePagination = () => {
                 paginationContainer.innerHTML = '';
@@ -202,19 +189,22 @@
                 const data = await response.json();
 
                 tableBody.innerHTML = '';
-                data.data.forEach(product => {
+                data.data.forEach(search => {
                     const row = document.createElement('tr');
                     row.classList.add('intro-x');
                     row.innerHTML = `
                         <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            ${product.keyword}
+                            ${search.keyword}
                         </td>
                         <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                            ${formatDate(product.created_at)}
+                            ${formatDate(search.created_at)}
+                        </td>
+                        <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
+                            ${search.total_search}
                         </td>
                         <td data-tw-merge="" class="px-5 py-3 border-b dark:border-darkmode-300 box w-56 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
                             <div class="flex items-center justify-center">
-                                <a class="mr-3 flex items-center" href="/data-search/detail/${product.id}">
+                                <a class="mr-3 flex items-center" href="/data-search/detail/${search.id}">
                                     <i data-tw-merge="" data-lucide="check-square" class="stroke-1.5 mr-1 h-4 w-4"></i>
                                     Detail
                                 </a>

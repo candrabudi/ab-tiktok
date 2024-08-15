@@ -6,7 +6,9 @@
             <div class="mt-5 grid grid-cols-12 gap-6">
                 <div id="videos-container" class="intro-y col-span-12 overflow-auto lg:overflow-visible">
                     <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-                        <a href="{{ route('tiktok.account.export', $a) }}" id="update-data-button" class="mb-3 transition duration-200 border inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus-visible:outline-none dark:focus:ring-slate-700 dark:focus:ring-opacity-50 [&:hover:not(:disabled)]:bg-opacity-90 [&:hover:not(:disabled)]:border-opacity-90 [&:not(button)]:text-center disabled:opacity-70 disabled:cursor-not-allowed bg-primary border-primary text-white dark:border-primary mr-2 shadow-md" style="margin-right: 10px; ">Export Data</a>
+                        <a href="{{ route('tiktok.account.export', $a) }}" id="update-data-button"
+                            class="mb-3 transition duration-200 border inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus-visible:outline-none dark:focus:ring-slate-700 dark:focus:ring-opacity-50 [&:hover:not(:disabled)]:bg-opacity-90 [&:hover:not(:disabled)]:border-opacity-90 [&:not(button)]:text-center disabled:opacity-70 disabled:cursor-not-allowed bg-primary border-primary text-white dark:border-primary mr-2 shadow-md"
+                            style="margin-right: 10px; ">Export Data</a>
                         <button id="export-to-excel" class="btn btn-primary">Export to Excel</button>
 
                         <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
@@ -23,9 +25,9 @@
                                 <div class="search-container relative w-56 text-slate-500">
                                     <input id="search-input" type="text" placeholder="Search..."
                                         class="disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-darkmode-800/50 dark:disabled:border-transparent [&[readonly]]:bg-slate-100 [&[readonly]]:cursor-not-allowed [&[readonly]]:dark:bg-darkmode-800/50 [&[readonly]]:dark:border-transparent transition duration-200 ease-in-out text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-40 dark:bg-darkmode-800 dark:border-transparent dark:focus:ring-slate-700 dark:focus:ring-opacity-50 dark:placeholder:text-slate-500/80 w-56 pr-10">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" data-lucide="search"
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
                                         class="lucide lucide-search stroke-1.5 absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4">
                                         <circle cx="11" cy="11" r="8"></circle>
                                         <path d="m21 21-4.3-4.3"></path>
@@ -33,7 +35,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <table id="products-table" data-tw-merge=""
                             class="w-full text-left -mt-2 border-separate border-spacing-y-[10px]">
                             <thead data-tw-merge="" class="">
@@ -53,6 +55,10 @@
                                     <th data-tw-merge=""
                                         class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
                                         Average Views
+                                    </th>
+                                    <th data-tw-merge=""
+                                        class="font-medium px-5 py-3 dark:border-darkmode-300 text-center whitespace-nowrap border-b-0 text-center">
+                                        AKSI
                                     </th>
                                 </tr>
                             </thead>
@@ -86,59 +92,61 @@
     </div>
 @endsection
 @section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const exportButton = document.getElementById('export-to-excel');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const exportButton = document.getElementById('export-to-excel');
 
-    const fetchAllData = async () => {
-        let allData = [];
-        let currentPage = 1;
-        let totalPages = 0;
+            const fetchAllData = async () => {
+                let allData = [];
+                let currentPage = 1;
+                let totalPages = 0;
 
-        const loadPageData = async (page) => {
-            try {
-                const response = await fetch(`/load/data-search/detail/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`);
-                const data = await response.json();
-                allData = allData.concat(data.data);
-                totalPages = Math.ceil(data.total / data.per_page);
+                const loadPageData = async (page) => {
+                    try {
+                        const response = await fetch(
+                            `/load/data-search/detail/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`
+                            );
+                        const data = await response.json();
+                        allData = allData.concat(data.data);
+                        totalPages = Math.ceil(data.total / data.per_page);
 
-                if (page < totalPages) {
-                    currentPage++;
-                    await loadPageData(currentPage);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
+                        if (page < totalPages) {
+                            currentPage++;
+                            await loadPageData(currentPage);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                };
 
-        await loadPageData(currentPage);
-        return allData;
-    };
+                await loadPageData(currentPage);
+                return allData;
+            };
 
-    const exportToExcel = async () => {
-        const allData = await fetchAllData();
+            const exportToExcel = async () => {
+                const allData = await fetchAllData();
 
-        // Load the xlsx library
-        const XLSX = window.XLSX;
+                // Load the xlsx library
+                const XLSX = window.XLSX;
 
-        // Create a new workbook and add a worksheet
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(allData, {
-            header: ["avatar", "nickname", "followers", "likes", "top12_play_count_average"], // Adjust headers according to your data
+                // Create a new workbook and add a worksheet
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(allData, {
+                    header: ["avatar", "nickname", "followers", "likes",
+                        "top12_play_count_average"], // Adjust headers according to your data
+                });
+
+                XLSX.utils.book_append_sheet(wb, ws, "Products");
+
+                // Generate Excel file and trigger download
+                XLSX.writeFile(wb, "products.xlsx");
+            };
+
+            exportButton.addEventListener('click', exportToExcel);
         });
-
-        XLSX.utils.book_append_sheet(wb, ws, "Products");
-
-        // Generate Excel file and trigger download
-        XLSX.writeFile(wb, "products.xlsx");
-    };
-
-    exportButton.addEventListener('click', exportToExcel);
-});
-
-</script>
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('#products-table tbody');
@@ -162,7 +170,9 @@
                 };
             };
 
-            const loadData = async (url = `/load/data-search/detail/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`) => {
+            const loadData = async (url =
+                `/load/data-search/detail/{{ $a }}?page=${page}&perPage=${perPage}&search=${encodeURIComponent(searchQuery)}`
+                ) => {
                 loadingSpinner.classList.remove('hidden');
                 try {
                     const response = await fetch(url);
@@ -174,11 +184,7 @@
                         row.classList.add('intro-x');
                         row.innerHTML = `
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                <div class="flex">
-                                    <div class="image-fit zoom-in h-10 w-10">
-                                        <img data-placement="top" title="Uploaded at24 March 2021" src="${result.avatar}" alt="Product Image" class="tooltip cursor-pointer rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]">
-                                    </div>
-                                </div>
+                               <a href="https://tiktok.com/@${result.tiktok_account_id}">${result.tiktok_account_id}</a>
                             </td>
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
                                 ${result.nickname}
@@ -186,23 +192,17 @@
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
                                 ${result.followers ? result.followers : 'N/A'}
                             </td>
-                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                ${result.likes ? result.likes : 'N/A'}
-                            </td>
-                            <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                <div class="flex items-center justify-center text-${result.verified ? 'success' : 'danger'}">
-                                    ${result.top12_play_count_average}
-                                </div>
-                            </td>
+                           <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
+    <div class="flex items-center justify-center text-${result.verified ? 'success' : 'danger'}">
+        ${Math.round(result.top12_play_count_average)}
+    </div>
+</td>
+
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-56 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
                                     <a class="mr-3 flex items-center" href="/data-search/profile/${result.unique_id}">
                                         <i class="stroke-1.5 mr-1 h-4 w-4"></i>
                                         Detail
-                                    </a>
-                                    <a class="flex items-center text-danger" href="/product/delete/${result.id}" data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
-                                        <i class="stroke-1.5 mr-1 h-4 w-4"></i>
-                                        Delete
                                     </a>
                                 </div>
                             </td>

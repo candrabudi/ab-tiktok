@@ -22,6 +22,8 @@ Route::get('/data-search/profile/{a}', [TikTokController::class, 'dataSearchProf
 Route::get('/export-data/{a}', [TikTokController::class, 'exportTikTokAccounts'])->name('tiktok.account.export');
 Route::get('/data-search/profile/videos/{a}', [TikTokController::class, 'scrapVideoTiktokAccount'])->name('tiktok.account.videos');
 Route::get('/load/data-search/profile/videos/{a}', [TikTokController::class, 'loadTiktokAccountVideo'])->name('tiktok.load.account.videos');
+Route::post('/api/insertSearchData', [TikTokController::class, 'insertSearchData']);
+Route::post('/api/insertAccountData', [TikTokController::class, 'insertAccountData']);
 
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -184,10 +184,10 @@
                         row.classList.add('intro-x');
                         row.innerHTML = `
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box w-40 rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                               <a href="https://tiktok.com/@${result.tiktok_account_id}">${result.tiktok_account_id}</a>
+                               <a href="https://tiktok.com/@${result.tiktok_account_id}" target="_blank">${result.tiktok_account_id}</a>
                             </td>
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-left shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
-                                ${result.nickname}
+                                <a href="https://tiktok.com/@${result.unique_id}" target="_blank">${result.unique_id}</a>
                             </td>
                             <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 text-center shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">
                                 ${result.followers ? result.followers : 'N/A'}

@@ -199,36 +199,34 @@ class TikTokController extends Controller
     // list hasil pencarian tiktok
     public function searchResult(Request $request)
     {
-        $results = TiktokSearch::paginate(10);
+        $results = TiktokSearch::orderBy('created_at', 'desc')->paginate(10);
         $results->getCollection()->transform(function ($account) {
             $account->total_search = $account->getTiktokAccountCountAttribute();
             return $account;
         });
-
         foreach ($results as $result) {
             $result->account_count = $result->tiktokAccountCountAttribute;
         }
-
         if ($request->ajax()) {
             return view('tiktok_results', compact('results'))->render();
         }
-
+    
         return view('tiktok_keyword', compact('results'));
     }
-
-
+    
     public function loadSearchResult(Request $request)
     {
         $page = $request->input('page', 1);
         $perPage = $request->input('perPage', 10);
-        $results = TiktokSearch::paginate($perPage, ['*'], 'page', $page);
+        $results = TiktokSearch::orderBy('created_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
         $results->getCollection()->transform(function ($account) {
             $account->total_search = $account->getTiktokAccountCountAttribute();
             return $account;
         });
+    
         return response()->json($results);
     }
-
+    
     // end list hasil pencarian tiktok
 
     // data profile akun tiktok

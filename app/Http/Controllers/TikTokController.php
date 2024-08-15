@@ -404,7 +404,7 @@ class TikTokController extends Controller
                'likes' => $result->likes,
                'followers' => $result->followers,
                'total_video' => $result->total_video,
-               'average_views' => round($result->getTop12PlayCountAverageAttribute(), 2),
+               'average_views' => round($result->getTop12PlayCountAverageAttribute()),
            ];
    
            array_push($resTiktokAccounts, $data);

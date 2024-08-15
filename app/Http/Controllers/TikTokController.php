@@ -399,7 +399,7 @@ class TikTokController extends Controller
        foreach($results as $result) {
            $data = [
                'tiktok_account_id' => "https://tiktok.com/@".$result->tiktok_account_id,
-               'nickname' => $result->nickname,
+               'unique_id' => $result->unique_id,
                'following' => $result->following,
                'likes' => $result->likes,
                'followers' => $result->followers,
@@ -422,7 +422,7 @@ class TikTokController extends Controller
            "Expires" => "0"
        );
    
-       $columns = array('Tiktok Account ID', 'Nickname', 'Following', 'Likes', 'Followers', 'Total Video', 'Average Views');
+       $columns = array('Tiktok Account ID', 'Username', 'Following', 'Likes', 'Followers', 'Total Video', 'Average Views');
    
        $callback = function() use($resTiktokAccounts, $columns) {
            $file = fopen('php://output', 'w');
@@ -431,7 +431,7 @@ class TikTokController extends Controller
            foreach ($resTiktokAccounts as $account) {
                fputcsv($file, array(
                    $account['tiktok_account_id'],
-                   $account['nickname'],
+                   $account['unique_id'],
                    $account['following'],
                    $account['likes'],
                    $account['followers'],

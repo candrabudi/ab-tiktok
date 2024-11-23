@@ -254,7 +254,7 @@
                     <a class="-intro-x flex items-center pt-5" href="#">
                         <img class="w-6" src="{{ asset('https://cdn-icons-png.flaticon.com/512/3437/3437352.png') }}"
                             alt="Midone - Tailwind Admin Dashboard Template">
-                        <span class="ml-3 text-lg text-white"> GASSTOK </span>
+                        <span class="ml-3 text-lg text-white"> Mager Tools </span>
                     </a>
                     <div class="my-auto">
                         <img class="-intro-x -mt-16 w-1/2" src="{{ asset('dist/images/illustration.svg') }}"

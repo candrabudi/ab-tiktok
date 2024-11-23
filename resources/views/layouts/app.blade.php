@@ -11,7 +11,7 @@
     <meta name="keywords"
         content="admin template, midone Admin Template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="LEFT4CODE">
-    <title>@yield('title') | GASSTOK</title>
+    <title>@yield('title') | Mager Tools</title>
     <link rel="stylesheet" href="{{ asset('dist/css/vendors/tippy.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/vendors/litepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/vendors/tiny-slider.css') }}">
@@ -38,7 +38,7 @@
                 <a href="#" class="-intro-x hidden md:flex xl:w-[180px]">
                     <img class="w-6" src="https://cdn-icons-png.flaticon.com/512/3437/3437352.png" alt="Enigma Tailwind HTML Admin Template">
                     <span class="ml-3 text-lg text-white hidden xl:block">
-                        GASSTOK
+                        Mager Tools
                     </span>
                 </a>
                 <nav aria-label="breadcrumb"

@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TikTokController;
+use App\Http\Controllers\VideoMetricController;
+use App\Models\VideoMetric;
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +16,11 @@ use App\Http\Controllers\TikTokController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Auth::routes();
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 
 Route::get('/tiktok/search', [TikTokController::class, 'search'])->name('tiktok.search');
 Route::get('/data-search', [TikTokController::class, 'searchResult'])->name('tiktok.scrap.username');
@@ -25,6 +34,9 @@ Route::get('/load/data-search/profile/videos/{a}', [TikTokController::class, 'lo
 Route::post('/api/insertSearchData', [TikTokController::class, 'insertSearchData']);
 Route::post('/api/insertAccountData', [TikTokController::class, 'insertAccountData']);
 
-Auth::routes();
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/video-metrics', [VideoMetricController::class, 'index']);
+Route::get('/load/video-metrics', [VideoMetricController::class, 'loadVideoMetric']);
+
+Route::post('/api/video-metrics', [VideoMetricController::class, 'storeVideoMetric']);
+Route::get('/export-video-metrics', [VideoMetricController::class, 'exportVideoMetrics'])->name('export.videomatrics');

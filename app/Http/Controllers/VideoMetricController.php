@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\RapiApi;
 use App\Models\VideoMetric;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -26,6 +27,7 @@ class VideoMetricController extends Controller
 
     public function storeVideoMetric(Request $request)
     {
+        $rapidAPI = RapiApi::first();
         $tiktokUrl = $request->input('tiktok_url');
 
         if (!$tiktokUrl || !filter_var($tiktokUrl, FILTER_VALIDATE_URL)) {
@@ -37,7 +39,7 @@ class VideoMetricController extends Controller
         $apiUrl = 'https://tiktok-download-video1.p.rapidapi.com/getVideo';
         $headers = [
             'x-rapidapi-host' => 'tiktok-download-video1.p.rapidapi.com',
-            'x-rapidapi-key' => '2a09d86b78msh2473db4ca3d6a38p15d84djsne473bc15ea85',
+            'x-rapidapi-key' => $rapidAPI->rapid_key,
         ];
 
         try {

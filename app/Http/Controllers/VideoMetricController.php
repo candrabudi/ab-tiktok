@@ -13,7 +13,8 @@ class VideoMetricController extends Controller
 {
     public function index()
     {
-        return view('video_metrict');
+        $rapidAPI = RapiApi::first();
+        return view('video_metrict', compact('rapidAPI'));
     }
 
     public function loadVideoMetric(Request $request)

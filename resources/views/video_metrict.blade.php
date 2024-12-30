@@ -66,6 +66,9 @@
                             <th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
                                 Shares
                             </th>
+                            <th class="font-medium px-5 py-3 dark:border-darkmode-300 whitespace-nowrap border-b-0">
+                                Saved
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,12 +166,14 @@
                         });
 
                         const data = response.data.data;
+                        console.log(data);
                         allVideoMetrics.push({
                             url: cleanedUrl,
                             views: data.play_count,
                             likes: data.digg_count,
                             comments: data.comment_count,
                             shares: data.share_count,
+                            saves: data.collect_count,
                         });
 
                         processedCount++;
@@ -213,6 +218,7 @@
                 <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">${item.likes}</td>
                 <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">${item.comments}</td>
                 <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">${item.shares}</td>
+                <td class="px-5 py-3 border-b dark:border-darkmode-300 box rounded-l-none rounded-r-none border-x-0 shadow-[5px_3px_5px_#00000005] first:rounded-l-[0.6rem] first:border-l last:rounded-r-[0.6rem] last:border-r dark:bg-darkmode-600">${item.saves}</td>
             `;
 
                 tableBody.appendChild(row);
